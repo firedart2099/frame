@@ -10,7 +10,16 @@
       return new Response(JSON.stringify({ error: 'deviceId ausente' }), { status: 400, headers: { 'access-control-allow-origin': '*' } });
     }
 
-    const codigo = Math.random().toString(36).substring(2, 8).toUpperCase();
+    // Sem 0/O/1/I: o celular "corrige" esses pares na hora de digitar
+    // (normalizarCodigo em tvLink.js), pensado pro alfabeto antigo que nunca
+    // gerava 0/1. Um codigo com "0" de verdade virava "O" no celular e nunca
+    // batia com o codigo real — a TV ficava esperando pra sempre mesmo com o
+    // celular dizendo "conectado".
+    const ALFABETO = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+    const aleatorio = new Uint32Array(6);
+    crypto.getRandomValues(aleatorio);
+    let codigo = '';
+    for (const v of aleatorio) codigo += ALFABETO[v % ALFABETO.length];
     const expiresAt = new Date(Date.now() + 15 * 60 * 1000).toISOString();
 
     const res = await fetch(`${SUPABASE_URL}/rest/v1/tv_auth_codes`, {

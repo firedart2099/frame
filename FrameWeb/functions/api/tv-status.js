@@ -9,6 +9,9 @@
   if (!code) {
     return new Response(JSON.stringify({ error: 'Codigo ausente' }), { status: 400, headers: { 'access-control-allow-origin': '*' } });
   }
+  if (!/^[A-Z2-9]{6}$/.test(code.toUpperCase())) {
+    return new Response(JSON.stringify({ error: 'Codigo invalido' }), { status: 400, headers: { 'access-control-allow-origin': '*' } });
+  }
 
   try {
     const res = await fetch(`${SUPABASE_URL}/rest/v1/tv_auth_codes?code=eq.${code.toUpperCase()}&select=status,tv_email,tv_password,owner_id`, {

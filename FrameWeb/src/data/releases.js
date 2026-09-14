@@ -31,7 +31,7 @@ export const RELEASES = [
       {
         label: 'Android & Android TV',
         platform: 'android',
-        url: 'https://viigaxgbimmjudbuhoqh.supabase.co/storage/v1/object/public/app/frame-1.5.0.apk',
+        url: 'https://github.com/firedart2099/frame/releases/download/v1.5.0/frame-1.5.0.apk',
         note: 'Celular, tablet e TV (D-pad)  Android 8+',
       },
     ],
