@@ -1,0 +1,96 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8" />
+  <title>Frame — teste do motor DUAL</title>
+  <style>
+    body { font: 14px system-ui; background: #111; color: #ddd; margin: 0; padding: 16px; }
+    video { width: 100%; max-width: 960px; background: #000; display: block; }
+    #painel { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; margin: 10px 0; }
+    input { width: 520px; padding: 6px; }
+    button { padding: 6px 12px; }
+    #log { white-space: pre-wrap; font: 12px monospace; background: #000; padding: 8px; height: 220px; overflow: auto; }
+    .faixa { padding: 4px 8px; border: 1px solid #555; border-radius: 4px; cursor: pointer; }
+    .faixa.ativa { background: #2a5; color: #000; }
+    .faixa.morta { opacity: 0.4; cursor: not-allowed; }
+  </style>
+</head>
+<body>
+  <h3>Teste do motor (DUAL + Dolby)</h3>
+  <div id="painel">
+    <input id="hash" placeholder="hash do torrent (ou URL direta do arquivo)" value="cd9430ca129ba62b75c42a1f6c34d1a4d1002d36" />
+    <button id="abrir">Abrir</button>
+    <span id="cors"></span>
+  </div>
+  <div id="faixas" style="display:flex;gap:8px;margin:8px 0"></div>
+  <video id="v" controls></video>
+  <div id="estado"></div>
+  <div id="log"></div>
+  <script type="module">
+    import { abrirMotor } from './src/services/remux/motor.js';
+    import { temCors } from './src/services/remux/fonteHttp.js';
+
+    const $ = (s) => document.querySelector(s);
+    const log = (...a) => { $('#log').textContent += a.map((x) => (typeof x === 'string' ? x : JSON.stringify(x))).join(' ') + '\n'; $('#log').scrollTop = 1e9; };
+    const video = $('#v');
+    let motor = null;
+
+    video.addEventListener('error', () => log('ERRO <video>:', video.error && video.error.message, video.error && video.error.code));
+
+    $('#abrir').onclick = async () => {
+      try {
+        if (motor) { motor.destruir(); motor = null; }
+        let url = $('#hash').value.trim();
+        if (!/^https?:/.test(url)) {
+          log('desbloqueando', url, '...');
+          const r = await fetch(`https://frametv.pages.dev/api/unlock?hash=${url}`);
+          const j = await r.json();
+          if (!j.url) { log('unlock falhou:', j); return; }
+          url = j.url;
+          log('arquivo:', j.nome, (j.tamanho / 1e9).toFixed(2) + ' GB');
+        }
+        window.dispatchEvent(new Event('frame-extensao-pedir')); await new Promise((r) => setTimeout(r, 300)); log('extensão:', document.documentElement.getAttribute('data-frame-extensao') || '(ausente)');
+        const cors = await temCors(url);
+        window.dispatchEvent(new Event('frame-extensao-pedir')); await new Promise((r) => setTimeout(r, 300)); log('depois do fetch:', document.documentElement.getAttribute('data-frame-extensao'));
+        $('#cors').textContent = cors ? 'CORS ok (extensão ativa)' : 'SEM CORS — instale a extensão';
+        if (!cors) return;
+
+        const t0 = performance.now();
+        motor = window.__motor = await abrirMotor(video, url, {
+          aoEstado: (s) => { $('#estado').textContent = s; log('estado:', s); },
+          aoErro: (e) => log('ERRO motor:', e && (e.message || e)),
+        });
+        log(`aberto em ${(performance.now() - t0).toFixed(0)} ms; duração ${(motor.info.duracaoMs / 60000).toFixed(1)} min; cues ${motor.info.cues.length}`);
+        const faixasEl = $('#faixas');
+        faixasEl.innerHTML = '';
+        for (const f of motor.faixasAudio) {
+          const b = document.createElement('span');
+          b.className = 'faixa' + (f.numero === motor.audioAtivo ? ' ativa' : '') + (f.toca ? '' : ' morta');
+          b.textContent = `#${f.numero} ${f.idioma} ${f.codecCurto} ${f.canais}ch ${f.nome || ''}`;
+          b.onclick = async () => {
+            if (!f.toca) return;
+            log('trocando pra faixa', f.numero);
+            await motor.trocarAudio(f.numero);
+            [...faixasEl.children].forEach((c) => c.classList.remove('ativa'));
+            b.classList.add('ativa');
+          };
+          faixasEl.appendChild(b);
+        }
+        log('faixas:', motor.faixasAudio.map((f) => `${f.numero}:${f.idioma}/${f.codecCurto}${f.toca ? '' : '(x)'}`).join(' '));
+        video.play().catch((e) => log('play():', e.message));
+      } catch (e) {
+        log('ERRO:', e.message || e);
+        console.error(e);
+      }
+    };
+
+    setInterval(() => {
+      if (!motor) return;
+      const b = video.buffered;
+      const faixas = [];
+      for (let i = 0; i < b.length; i++) faixas.push(`${b.start(i).toFixed(1)}-${b.end(i).toFixed(1)}`);
+      $('#estado').textContent = `t=${video.currentTime.toFixed(1)} buffered=[${faixas.join(' ')}] ready=${video.readyState}`;
+    }, 1000);
+  </script>
+</body>
+</html>

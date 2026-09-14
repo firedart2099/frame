@@ -1,0 +1,12 @@
+{
+  "version": "1.3.4",
+  "versionCode": 21,
+  "date": "2026-09-13",
+  "size": "26 MB",
+  "url": "https://viigaxgbimmjudbuhoqh.supabase.co/storage/v1/object/public/app/frame-1.3.4.apk",
+  "changes": [
+    "\"O Frame foi fechado devido a um erro interno\" ao dar play num arquivo cujo som não toca no aparelho (JoJo): o player tentava trocar de arquivo e caía numa função que não tinha sido importada. Agora troca.",
+    "JoJo T1 abria \"Stone Ocean\" (que é a T5): pack de anime nomeado pela parte, sem número de temporada, passava por qualquer temporada. Agora a busca sabe o nome de cada temporada pela TMDB e descarta o release que cita outra — no app e no site.",
+    "O cartão da coleção não pisca mais o filme anterior na troca de fundo: são duas camadas fixas, a nova entra por cima e a antiga só apaga por baixo."
+  ]
+}

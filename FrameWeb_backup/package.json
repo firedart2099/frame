@@ -1,0 +1,28 @@
+{
+  "name": "frame-web",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "npm run zip-extensao && node scripts/gerar-versao.mjs && vite build",
+    "preview": "vite preview",
+    "sync-app": "node scripts/sync-from-app.mjs",
+    "deploy": "npm run build && npx wrangler pages deploy dist --project-name=frametv --branch=main",
+    "zip-extensao": "node scripts/empacotar-extensao.mjs"
+  },
+  "dependencies": {
+    "@audio/decode-dts": "^1.0.0",
+    "@audio/decode-eac3": "^1.0.0",
+    "@supabase/supabase-js": "^2.112.4",
+    "hls.js": "^1.5.20",
+    "jszip": "^3.10.1",
+    "papaparse": "^5.6.0",
+    "react": "^19.1.0",
+    "react-dom": "^19.1.0"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-react": "^4.3.4",
+    "vite": "^6.0.7"
+  }
+}

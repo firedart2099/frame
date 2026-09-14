@@ -1,0 +1,43 @@
+{
+  "manifest_version": 3,
+  "name": "Frame — áudio dublado",
+  "version": "1.2.0",
+  "description": "Deixa o site do Frame escolher a faixa de áudio (dublado ou original), tocar Dolby/DTS no navegador e buscar fontes que só respondem do seu computador (The Pirate Bay, MovieBox).",
+  "minimum_chrome_version": "110",
+  "permissions": [
+    "declarativeNetRequest",
+    "declarativeNetRequestWithHostAccess"
+  ],
+  "host_permissions": [
+    "*://*.debrid.it/*",
+    "*://*.alldebrid.com/*",
+    "*://*.debrid.link/*",
+    "*://*.inmoviebox.com/*",
+    "*://*.aoneroom.com/*",
+    "*://*.apibay.org/*",
+    "https://frametv.pages.dev/*",
+    "https://*.frametv.pages.dev/*",
+    "http://localhost/*",
+    "http://localhost:5173/*"
+  ],
+  "background": {
+    "service_worker": "fundo.js"
+  },
+  "content_scripts": [
+    {
+      "matches": [
+        "http://localhost/*",
+        "http://localhost:5173/*",
+        "https://frametv.pages.dev/*",
+        "https://*.frametv.pages.dev/*"
+      ],
+      "js": [
+        "sonda.js"
+      ],
+      "run_at": "document_start"
+    }
+  ],
+  "icons": {
+    "128": "icone.png"
+  }
+}

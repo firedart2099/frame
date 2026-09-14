@@ -1,0 +1,12 @@
+{
+  "version": "1.5.0",
+  "versionCode": 23,
+  "date": "2026-09-13",
+  "size": "27 MB",
+  "url": "https://viigaxgbimmjudbuhoqh.supabase.co/storage/v1/object/public/app/frame-1.5.0.apk",
+  "changes": [
+    "Aplicativo 100% nativo para Android TV! Código de pareamento na tela e D-pad otimizado.",
+    "Ícone de Cast (TV) na barra superior do celular para conectar rapidamente e controlar a reprodução.",
+    "Atualização nativa OTA. Agora a versão baixada no celular carrega a assinatura correta e o update loop infinito foi corrigido."
+  ]
+}

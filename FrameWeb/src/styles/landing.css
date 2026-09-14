@@ -1,0 +1,523 @@
+/* =====================================================================
+   Landing — a única tela do Frame que alguém vê antes de entrar.
+
+   Regras que valem pra tudo aqui:
+   · nenhuma medida presa a "tamanho de celular": o que quebra o layout é o
+     conteúdo ficar apertado, não o aparelho (Marcotte / Walton);
+   · tipografia fluida com clamp(), então não existe tamanho intermediário
+     feio entre os breakpoints;
+   · alvo de toque nunca menor que 44px;
+   · movimento é sempre opcional — tudo aqui sobrevive a
+     prefers-reduced-motion, que o theme.css desliga por completo.
+   ===================================================================== */
+
+.landing { position: relative; overflow-x: hidden; }
+.landing > * { position: relative; z-index: 2; }
+
+/* Zeldman: quem navega por teclado chega ao conteúdo em uma tecla. */
+.skip {
+  position: absolute;
+  left: -9999px;
+  top: 0;
+  z-index: 100;
+  padding: 12px 18px;
+  background: var(--accent);
+  color: #000;
+  font-weight: 700;
+  font-size: 13px;
+  border-radius: 0 0 var(--radius) 0;
+}
+.skip:focus { left: 0; }
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* ------------------------------------------------------- parede de pôsteres */
+
+.poster-wall {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  z-index: 0;
+  mask-image: radial-gradient(120% 82% at 50% 10%, #000 0%, rgba(0, 0, 0, 0.3) 46%, transparent 76%);
+  -webkit-mask-image: radial-gradient(120% 82% at 50% 10%, #000 0%, rgba(0, 0, 0, 0.3) 46%, transparent 76%);
+}
+.poster-wall-grid {
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: minmax(130px, 1fr);
+  gap: 12px;
+  height: 100%;
+  padding: 12px;
+  opacity: 0.36;
+}
+.poster-col { display: grid; gap: 12px; grid-auto-rows: max-content; animation: drift 96s linear infinite; }
+.poster-col:nth-child(even) { animation-direction: reverse; }
+.poster-col img {
+  width: 100%;
+  aspect-ratio: 2 / 3;
+  object-fit: cover;
+  border-radius: var(--radius);
+  background: #0d0d0d;
+  filter: grayscale(0.4) contrast(1.05);
+}
+@keyframes drift {
+  from { transform: translateY(0); }
+  to { transform: translateY(-50%); }
+}
+
+/* vinheta: garante contraste do texto sobre qualquer pôster */
+.landing::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  background:
+    radial-gradient(90% 58% at 50% 0%, rgba(0, 0, 0, 0.6), transparent 70%),
+    linear-gradient(180deg, rgba(0, 0, 0, 0.78) 0%, rgba(0, 0, 0, 0.4) 28%, #000 70%);
+}
+
+/* --------------------------------------------------------- revelar seções */
+
+.reveal { opacity: 0; transform: translateY(18px); transition: opacity 0.7s var(--ease), transform 0.7s var(--ease); }
+.reveal.in { opacity: 1; transform: none; }
+
+/* marca do topo: o icone do app + o nome, alinhados pela linha de base */
+.brand { display: inline-flex; align-items: center; gap: 11px; }
+.brand svg { color: var(--fg); }
+
+/* --------------------------------------------------------------- topo */
+
+.landing-nav {
+  height: var(--header-h);
+  padding: 0 var(--page-x);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+.landing-nav .wordmark { font-size: 22px; letter-spacing: -0.05em; }
+.landing-nav .enter {
+  min-height: 44px;
+  display: inline-flex;
+  align-items: center;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--fg-muted);
+  transition: color 0.2s var(--ease);
+}
+.landing-nav .enter:hover { color: var(--fg); }
+
+/* --------------------------------------------------------------- hero */
+
+.hero {
+  padding: clamp(48px, 11vh, 130px) var(--page-x) clamp(64px, 12vh, 140px);
+  max-width: 1060px;
+  margin: 0 auto;
+  text-align: center;
+}
+.hero .eyebrow { margin-bottom: clamp(20px, 3vh, 30px); }
+
+.hero-logo { display: grid; place-items: center; margin-bottom: clamp(18px, 3vh, 30px); color: var(--fg); }
+
+.hero h1 { margin: 0 0 6px; }
+.hero-mark {
+  display: block;
+  font-size: clamp(58px, 14vw, 176px);
+  line-height: 0.84;
+  letter-spacing: -0.055em;
+}
+
+/* Duas linhas, nao quatro: a promessa em branco, a condicao em cinza embaixo.
+   O bloco de quatro linhas cinzas sumia em cima dos posteres. */
+.claim {
+  font-size: clamp(24px, 4.2vw, 46px);
+  font-weight: 800;
+  letter-spacing: -0.04em;
+  line-height: 1.05;
+  margin: 0 0 10px;
+  color: var(--fg);
+  text-wrap: balance;
+}
+.subclaim {
+  font-size: clamp(15px, 1.9vw, 22px);
+  font-weight: 500;
+  letter-spacing: -0.01em;
+  margin: 0 0 clamp(22px, 3vh, 32px);
+  color: #9a9a9a;
+}
+
+.lede {
+  max-width: 60ch;
+  margin: 0 auto clamp(28px, 4vh, 42px);
+  font-size: clamp(15px, 1.5vw, 18px);
+  font-weight: 300;
+  line-height: 1.62;
+  color: #b6b6b6;
+  text-wrap: pretty;
+}
+.lede strong { color: var(--fg); font-weight: 500; }
+
+.hero-actions { display: flex; gap: 14px; justify-content: center; flex-wrap: wrap; }
+.hero-actions .btn { min-height: 48px; }
+
+.fineprint {
+  margin-top: 20px;
+  font-size: 11px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--fg-dim);
+}
+
+.invite-note {
+  margin: clamp(22px, 3vh, 32px) auto 0;
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+  font-size: 12px;
+  color: var(--fg-muted);
+  font-weight: 300;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  padding: 9px 16px;
+  line-height: 1.4;
+  text-align: left;
+}
+.invite-note svg { color: var(--fg-dim); }
+
+/* ------------------------------------------------------------- seções */
+
+.sec-eyebrow { display: flex; align-items: center; gap: 12px; margin: 0 0 22px; }
+.sec-eyebrow .idx {
+  font-variant-numeric: tabular-nums;
+  color: var(--fg-ghost);
+  font-weight: 700;
+  letter-spacing: 0.08em;
+}
+
+.pillars { max-width: 1180px; margin: 0 auto clamp(56px, 10vh, 120px); padding: 0 var(--page-x); }
+.pillar-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  /* 4 em cima, 2 no meio, 1 no celular. O auto-fit deixava um quadrado
+     sozinho na segunda linha em tela de notebook. */
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 0;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+}
+/* A linha entre os quadrados e uma sombra interna, nao um gap de 1px com
+   fundo: com 4 colunas de 1fr o gap do meio caia num meio pixel e sumia. */
+.pillar {
+  background: #050505;
+  padding: 34px 30px 38px;
+  box-shadow: inset -1px -1px 0 var(--line);
+  transition: background 0.3s var(--ease);
+}
+@media (max-width: 960px) { .pillar-list { grid-template-columns: repeat(2, 1fr); } }
+@media (max-width: 520px) { .pillar-list { grid-template-columns: 1fr; } }
+.pillar:hover { background: #0c0c0c; }
+.pillar .ico { display: block; color: var(--fg); margin-bottom: 18px; }
+.pillar h2 { font-size: 17px; font-weight: 700; letter-spacing: -0.02em; margin: 0 0 10px; }
+.pillar p { margin: 0; font-size: 14px; line-height: 1.62; color: var(--fg-muted); font-weight: 300; text-wrap: pretty; }
+
+/* ----------------------------------------------------------- showcase */
+
+.showcase {
+  max-width: 1180px;
+  margin: 0 auto clamp(56px, 10vh, 120px);
+  padding: 0 var(--page-x);
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 330px), 1fr));
+  gap: clamp(26px, 5vw, 72px);
+  align-items: center;
+}
+.showcase .sec-eyebrow { grid-column: 1 / -1; }
+.showcase.reverse .showcase-text { order: 2; }
+@media (max-width: 780px) { .showcase.reverse .showcase-text { order: 0; } }
+
+.showcase h2 {
+  color: #8a8a8a;
+  font-size: clamp(27px, 4vw, 46px);
+  font-weight: 800;
+  letter-spacing: -0.04em;
+  line-height: 1.04;
+  margin: 0 0 18px;
+  text-wrap: balance;
+}
+.showcase p { color: var(--fg-muted); font-weight: 300; line-height: 1.65; margin: 0 0 14px; text-wrap: pretty; }
+.showcase .hl { color: var(--fg); }
+
+.mini-mock {
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius-lg);
+  background: #070707;
+  padding: 16px;
+  position: relative;
+  aspect-ratio: 16 / 10;
+  overflow: hidden;
+}
+.mini-mock .fake-page {
+  position: absolute;
+  inset: 16px;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 8px;
+  opacity: 0.3;
+}
+.mini-mock .fake-page i {
+  display: block;
+  aspect-ratio: 2 / 3;
+  background: linear-gradient(160deg, #1d1d1d, #101010);
+  border-radius: 4px;
+}
+.mini-mock .float {
+  position: absolute;
+  right: 18px;
+  bottom: 18px;
+  width: 46%;
+  aspect-ratio: 16 / 9;
+  border-radius: 8px;
+  background: #000;
+  border: 1px solid #2e2e2e;
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.9);
+  display: grid;
+  place-items: center;
+  animation: floaty 5s ease-in-out infinite;
+}
+.mini-mock .float::before {
+  content: '';
+  width: 0;
+  height: 0;
+  border-left: 16px solid var(--fg);
+  border-top: 10px solid transparent;
+  border-bottom: 10px solid transparent;
+  margin-left: 4px;
+}
+@keyframes floaty {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-7px); }
+}
+
+.drop-mock {
+  border: 1px dashed var(--line-strong);
+  border-radius: var(--radius-lg);
+  background: #060606;
+  aspect-ratio: 16 / 10;
+  display: grid;
+  place-content: center;
+  justify-items: center;
+  gap: 12px;
+  text-align: center;
+  padding: 24px;
+}
+.drop-mock .ico { color: var(--fg); }
+.drop-mock .fname { font-size: 13px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--fg-muted); }
+.drop-mock .hint { font-size: 11px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--fg-ghost); }
+
+/* --------------------------------------------------- player / conta */
+
+.player-sec, .conta-sec { max-width: 1180px; margin: 0 auto clamp(56px, 10vh, 120px); padding: 0 var(--page-x); }
+.sec-title {
+  color: #8a8a8a;
+  font-size: clamp(27px, 4vw, 46px);
+  font-weight: 800;
+  letter-spacing: -0.04em;
+  line-height: 1.04;
+  margin: 0 0 clamp(22px, 4vh, 40px);
+  max-width: 22ch;
+  text-wrap: balance;
+}
+.sec-title .hl { color: var(--fg); }
+
+.spec-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: clamp(18px, 3vw, 36px) clamp(18px, 3vw, 40px);
+}
+.spec-list.four { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+.spec { padding-top: 18px; border-top: 1px solid var(--line); }
+.spec .ico { display: block; color: var(--fg); margin-bottom: 14px; }
+.spec h3 { font-size: 15px; font-weight: 700; letter-spacing: -0.015em; margin: 0 0 8px; }
+.spec p { margin: 0; font-size: 13.5px; line-height: 1.6; color: var(--fg-muted); font-weight: 300; text-wrap: pretty; }
+@media (max-width: 900px) { .spec-list, .spec-list.four { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (max-width: 460px) { .spec-list, .spec-list.four { grid-template-columns: 1fr; } }
+
+/* chips do Explorar: dois acesos, o resto apagado */
+.chips-mock {
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius-lg);
+  background: #070707;
+  aspect-ratio: 16 / 10;
+  padding: clamp(18px, 3vw, 32px);
+  display: flex;
+  flex-wrap: wrap;
+  align-content: center;
+  justify-content: center;
+  gap: 10px;
+}
+/* app.css tambem tem .chip (os filtros de verdade, em caixa alta); aqui e so
+   ilustracao, com seletor mais forte pra nao herdar aquele. */
+.chips-mock .chip {
+  border: 1px solid var(--line-strong);
+  border-radius: 999px;
+  padding: 9px 16px;
+  font-size: 13px;
+  letter-spacing: 0;
+  text-transform: none;
+  color: var(--fg-muted);
+  background: transparent;
+  font-weight: 500;
+  cursor: default;
+}
+.chips-mock .chip.on { background: var(--fg); border-color: var(--fg); color: #000; }
+
+/* --------------------------------------------------------------- fim */
+
+.final {
+  padding: clamp(64px, 14vh, 160px) var(--page-x) clamp(56px, 10vh, 110px);
+  text-align: center;
+  position: relative;
+}
+.final::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: radial-gradient(60% 70% at 50% 60%, rgba(255, 255, 255, 0.06), transparent 70%);
+  pointer-events: none;
+}
+.final-mark { display: grid; place-items: center; color: var(--fg); margin-bottom: clamp(18px, 3vh, 28px); }
+.final h2 {
+  color: #8a8a8a;
+  font-size: clamp(40px, 8vw, 110px);
+  font-weight: 900;
+  letter-spacing: -0.055em;
+  line-height: 0.94;
+  margin: 0 0 clamp(26px, 4vh, 40px);
+}
+.final h2 .hl { color: var(--fg); }
+.final-actions { display: flex; gap: 14px; justify-content: center; flex-wrap: wrap; }
+.final-actions .btn { min-height: 50px; padding-inline: 26px; }
+
+.landing-footer {
+  border-top: 1px solid var(--line);
+  padding: 26px var(--page-x) 36px;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  gap: 12px 36px;
+}
+.landing-footer .wordmark { font-size: 20px; letter-spacing: -0.05em; }
+.foot-links { display: flex; flex-wrap: wrap; justify-content: center; gap: 6px 22px; }
+.foot-links button, .foot-links a {
+  min-height: 44px;
+  display: inline-flex;
+  align-items: center;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--fg-muted);
+  text-decoration: none;
+  transition: color 0.2s var(--ease);
+}
+.foot-links button:hover, .foot-links a:hover { color: var(--fg); }
+
+/* a pagina de versoes ainda usa o rodape antigo, em linha */
+.dl-page .landing-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  flex-wrap: wrap;
+  font-size: 11px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--fg-dim);
+  border-top: 0;
+}
+
+/* ------------------------------------------------------------ o app */
+
+.app-section .showcase-text { order: 0; }
+
+.app-card {
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius-lg);
+  background: #070707;
+  padding: 8px;
+}
+.app-card-row {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 16px 14px;
+  border-radius: var(--radius);
+}
+.app-card-row + .app-card-row { border-top: 1px solid var(--line); }
+.app-card-row.soon { opacity: 0.55; }
+.app-card-row .ico { color: var(--fg); display: grid; place-items: center; flex: none; }
+.app-card-info { flex: 1; min-width: 0; }
+.app-card-info .lbl { font-weight: 700; font-size: 15px; letter-spacing: -0.01em; }
+.app-card-info .note { font-size: 12px; color: var(--fg-muted); margin-top: 3px; font-weight: 300; }
+.app-card .act { min-height: 44px; padding-inline: 18px; flex: none; }
+.app-card .soon-tag {
+  font-size: 10px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--fg-dim);
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  padding: 7px 12px;
+  flex: none;
+}
+.app-card-tip {
+  margin: 4px 14px 10px;
+  font-size: 12px;
+  line-height: 1.55;
+  color: var(--fg-muted);
+  font-weight: 300;
+}
+.app-card-more {
+  width: 100%;
+  min-height: 44px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  border-top: 1px solid var(--line);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--fg-muted);
+  transition: color 0.2s var(--ease);
+}
+.app-card-more:hover { color: var(--fg); }
+
+/* celular: menos ar dentro dos quadrados, senao a lista vira uma pagina inteira */
+@media (max-width: 520px) {
+  .pillar { padding: 24px 22px 26px; }
+  .hero-actions .btn { width: 100%; justify-content: center; }
+  .final-actions .btn { width: 100%; justify-content: center; }
+}

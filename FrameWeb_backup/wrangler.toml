@@ -1,0 +1,6 @@
+# Cloudflare Pages — o build local vira o site.
+#   npm run build      -> gera dist/
+#   npm run deploy     -> npx wrangler pages deploy dist
+name = "frame"
+compatibility_date = "2026-09-07"
+pages_build_output_dir = "dist"

@@ -1,0 +1,1399 @@
+/* =====================================================================
+   Frame — telas internas (home, biblioteca, player, onboarding)
+   ===================================================================== */
+
+/* ---------------------------------------------------------------- header */
+
+.app-header {
+  position: sticky;
+  top: 0;
+  z-index: 60;
+  height: var(--header-h);
+  padding: 0 var(--page-x);
+  display: flex;
+  align-items: center;
+  gap: clamp(14px, 3vw, 34px);
+  /* O degradê desce até zero e a máscara apaga o header junto com ele. Sem a
+     máscara o backdrop-filter é aplicado na caixa inteira e o blur termina numa
+     linha reta: era isso que fazia o header virar um quadrado ao rolar. */
+  background: linear-gradient(180deg, rgba(0, 0, 0, 0.94), rgba(0, 0, 0, 0.6) 55%, rgba(0, 0, 0, 0));
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  mask-image: linear-gradient(180deg, #000 0%, #000 55%, transparent 100%);
+  -webkit-mask-image: linear-gradient(180deg, #000 0%, #000 55%, transparent 100%);
+  transition: background 260ms var(--ease), transform 260ms var(--ease);
+}
+/* rolando, o degradê fica mais fechado em cima — mas continua degradê, sem
+   fundo chapado e sem borda, que era o que cortava a tela em dois. */
+.app-header.scrolled {
+  background: linear-gradient(180deg, rgba(0, 0, 0, 0.99), rgba(0, 0, 0, 0.85) 55%, rgba(0, 0, 0, 0));
+}
+.app-header .wordmark { font-size: 19px; letter-spacing: -0.05em; margin-right: 6px; }
+
+.nav-tabs { display: flex; gap: clamp(12px, 2.4vw, 26px); align-items: baseline; }
+.nav-tabs button {
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  color: var(--fg-ghost);
+  transition: color 0.18s var(--ease);
+  padding: 4px 0;
+}
+.nav-tabs button:hover { color: var(--fg-muted); }
+.nav-tabs button.active { color: var(--fg); }
+
+.header-right { margin-left: auto; display: flex; align-items: center; gap: 14px; }
+
+.header-search {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  border-bottom: 1px solid var(--line-strong);
+  padding: 5px 2px;
+  min-width: 0;
+  transition: border-color 0.2s var(--ease);
+}
+.header-search:focus-within { border-bottom-color: var(--fg); }
+.header-search input {
+  width: clamp(90px, 20vw, 220px);
+  background: none;
+  border: none;
+  font-size: 13px;
+  letter-spacing: 0.04em;
+}
+.header-search input:focus { outline: none; }
+.header-search input::placeholder { color: var(--fg-ghost); }
+
+.avatar {
+  /* o avatar e um <button> e herdava o padding generico (1px 6px): a area
+     interna virava 18x28 e a foto quadrada aparecia espremida num retangulo,
+     com o fundo do botao sobrando dos lados como se fossem barras pretas */
+  padding: 0;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: #101010;
+  border: 1px solid var(--line-strong);
+  display: grid;
+  place-items: center;
+  font-size: 12px;
+  font-weight: 700;
+  overflow: hidden;
+  flex-shrink: 0;
+}
+.avatar img { width: 100%; height: 100%; object-fit: cover; }
+
+/* ------------------------------------------------------------------ hero */
+
+.home-hero {
+  position: relative;
+  height: min(78vh, 720px);
+  min-height: 440px;
+  margin-top: calc(var(--header-h) * -1);
+  display: flex;
+  align-items: flex-end;
+}
+.home-hero .backdrop { position: absolute; inset: 0; overflow: hidden; }
+.home-hero .backdrop img { width: 100%; height: 100%; object-fit: cover; }
+.home-hero .backdrop::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(90deg, rgba(0, 0, 0, 0.92) 0%, rgba(0, 0, 0, 0.55) 45%, rgba(0, 0, 0, 0.15) 100%),
+    linear-gradient(0deg, #000 2%, rgba(0, 0, 0, 0.2) 40%, rgba(0, 0, 0, 0.5) 100%);
+}
+.home-hero .inner {
+  position: relative;
+  padding: 0 var(--page-x) clamp(38px, 7vh, 76px);
+  max-width: 720px;
+}
+.home-hero h1 {
+  font-size: clamp(32px, 5.4vw, 62px);
+  font-weight: 900;
+  letter-spacing: -0.045em;
+  line-height: 0.97;
+  margin: 0 0 14px;
+}
+.home-hero .meta {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  flex-wrap: wrap;
+  font-size: 12px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--fg-muted);
+  margin-bottom: 16px;
+}
+.home-hero .overview {
+  font-size: 15px;
+  font-weight: 300;
+  line-height: 1.6;
+  color: #c8c8c8;
+  margin: 0 0 26px;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+.home-hero .actions { display: flex; gap: 12px; flex-wrap: wrap; }
+
+.rating-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+}
+.rating-chip.imdb { color: var(--imdb); }
+.rating-chip.lbxd { color: var(--lbxd); }
+
+/* ----------------------------------------------------------------- rows */
+
+.rows { padding: 0 0 90px; }
+.row { margin-bottom: clamp(26px, 4vh, 44px); }
+.row-head {
+  padding: 0 var(--page-x);
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 16px;
+}
+.row-head h2 {
+  font-size: 13px;
+  font-weight: 300;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  margin: 0 0 14px;
+}
+.row-scroller {
+  display: flex;
+  gap: 12px;
+  overflow-x: auto;
+  scroll-snap-type: x proximity;
+  /* `overflow-x: auto` obriga o overflow-y a deixar de ser `visible`: a fileira
+     vira caixa de recorte e corta o card que sobe no hover. A folga vertical
+     vive DENTRO da caixa (padding) e e desfeita por fora (margin negativa),
+     entao o card tem pra onde subir sem mudar o espacamento da pagina. */
+  padding: 10px var(--page-x) 16px;
+  margin-top: -10px;
+  margin-bottom: -10px;
+  /* sem isto o snap encosta o card na borda da tela e ele parece cortado */
+  scroll-padding-inline: var(--page-x);
+  scrollbar-width: none;
+}
+.row-scroller::-webkit-scrollbar { display: none; }
+
+.card {
+  flex: 0 0 auto;
+  width: clamp(112px, 13vw, 168px);
+  scroll-snap-align: start;
+  position: relative;
+  transition: transform 0.22s var(--ease);
+}
+.card:hover { transform: translateY(-5px); z-index: 2; }
+.card .art {
+  aspect-ratio: 2 / 3;
+  border-radius: var(--radius);
+  overflow: hidden;
+  background: #0a0a0a;
+  border: 1px solid #111;
+  position: relative;
+}
+.card .art img { width: 100%; height: 100%; object-fit: cover; }
+.card .art .fallback {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  padding: 10px;
+  text-align: center;
+  font-size: 12px;
+  color: var(--fg-ghost);
+}
+.card .title {
+  margin-top: 8px;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--fg-muted);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.card .save {
+  position: absolute;
+  top: 7px;
+  right: 7px;
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  background: rgba(0, 0, 0, 0.78);
+  display: grid;
+  place-items: center;
+  opacity: 0;
+  transition: opacity 0.18s var(--ease), background 0.18s var(--ease);
+}
+.card:hover .save, .card .save.on { opacity: 1; }
+.card .save.on { background: var(--fg); color: #000; }
+
+.progress-bar { height: 2px; background: #222; margin-top: 6px; border-radius: 2px; overflow: hidden; }
+.progress-bar i { display: block; height: 100%; background: var(--accent); }
+
+/* ------------------------------------------------------------ grid geral */
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(clamp(104px, 12vw, 156px), 1fr));
+  gap: clamp(10px, 1.4vw, 18px);
+  padding: 0 var(--page-x) 80px;
+}
+.grid .card { width: auto; }
+
+.page { padding-top: 26px; }
+.page-head { padding: 0 var(--page-x); margin-bottom: 22px; }
+.page-head h1 { font-size: clamp(26px, 3.4vw, 40px); font-weight: 800; letter-spacing: -0.04em; margin: 0 0 6px; }
+.page-head p { color: var(--fg-muted); font-size: 14px; font-weight: 300; margin: 0; }
+
+.empty {
+  padding: 70px var(--page-x);
+  text-align: center;
+  color: var(--fg-dim);
+  font-size: 14px;
+  font-weight: 300;
+}
+
+/* --------------------------------------------------------------- pastas */
+
+.folder-list { padding: 0 var(--page-x) 80px; display: grid; gap: 10px; }
+.folder-card {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  background: var(--card);
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius-lg);
+  padding: 15px;
+  text-align: left;
+  width: 100%;
+  transition: background 0.18s var(--ease), border-color 0.18s var(--ease);
+}
+.folder-card:hover { background: var(--card-hover); border-color: #444; }
+.folder-card .name { font-size: 16px; font-weight: 700; }
+.folder-card .desc { font-size: 12px; color: var(--fg-muted); margin-top: 4px; }
+.folder-card .count { margin-left: auto; font-size: 12px; color: var(--fg-dim); font-variant-numeric: tabular-nums; }
+
+/* ---------------------------------------------------------------- modal */
+
+.modal-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 90;
+  background: rgba(0, 0, 0, 0.82);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  overflow-y: auto;
+  padding: clamp(16px, 5vh, 60px) var(--page-x);
+  animation: fade 0.2s var(--ease);
+}
+@keyframes fade { from { opacity: 0; } }
+
+.modal {
+  max-width: 940px;
+  margin: 0 auto;
+  background: var(--bg-elev);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  animation: rise 0.28s var(--ease);
+}
+@keyframes rise { from { transform: translateY(14px); opacity: 0; } }
+
+.modal-hero { position: relative; aspect-ratio: 16 / 9; background: #000; }
+.modal-hero img { width: 100%; height: 100%; object-fit: cover; }
+.modal-hero::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(0deg, var(--bg-elev) 1%, transparent 62%);
+}
+.modal-close {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  z-index: 3;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: rgba(0, 0, 0, 0.72);
+  display: grid;
+  place-items: center;
+  transition: background 0.18s var(--ease);
+}
+.modal-close:hover { background: rgba(0, 0, 0, 0.95); }
+
+.modal-body { padding: 0 clamp(20px, 3.4vw, 36px) clamp(24px, 3.4vw, 36px); margin-top: -46px; position: relative; z-index: 2; }
+.modal-body h1 { font-size: clamp(26px, 3.6vw, 42px); font-weight: 900; letter-spacing: -0.04em; margin: 0 0 12px; }
+.modal-body .overview { color: #c2c2c2; font-weight: 300; line-height: 1.65; margin: 18px 0 24px; }
+
+.chips { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 8px; }
+.chip {
+  font-size: 10px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  padding: 5px 9px;
+  border: 1px solid var(--line-strong);
+  border-radius: 4px;
+  color: var(--fg-muted);
+}
+
+.season-picker { display: flex; gap: 10px; overflow-x: auto; padding-bottom: 10px; margin-bottom: 6px; scrollbar-width: none; }
+.season-picker::-webkit-scrollbar { display: none; }
+.season-picker button { font-size: 26px; font-weight: 700; color: var(--fg-ghost); transition: color 0.18s var(--ease); }
+.season-picker button.active { color: var(--fg); }
+
+.episode {
+  display: flex;
+  gap: 14px;
+  align-items: center;
+  padding: 13px 0;
+  border-bottom: 1px solid #111;
+  width: 100%;
+  text-align: left;
+}
+.episode:hover .ep-title { color: var(--fg); }
+.episode .ep-num { font-size: 17px; font-weight: 700; color: var(--fg-ghost); min-width: 30px; }
+.ep-title { font-size: 15px; font-weight: 500; color: #999; transition: color 0.18s var(--ease); }
+.episode .ep-date { margin-left: auto; font-size: 11px; color: var(--fg-dim); }
+
+/* --------------------------------------------------------------- player */
+
+.player-shell { position: fixed; z-index: 100; background: #000; overflow: hidden; }
+/* O player ocupa a tela inteira; o miniplayer e o outro tamanho, e mora no
+   contexto. O <video> nunca muda de lugar na arvore — se mudasse, o filme
+   voltava do zero a cada troca. */
+.player-shell { inset: 0; }
+.player-top {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 14px var(--page-x);
+  background: linear-gradient(180deg, rgba(0, 0, 0, 0.9), transparent);
+}
+.player-top .now { min-width: 0; }
+.player-top .now .t { font-size: 15px; font-weight: 700; letter-spacing: -0.02em; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.player-top .now .s { font-size: 11px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--fg-muted); }
+.player-top .sp { margin-left: auto; display: flex; gap: 8px; align-items: center; }
+
+.icon-btn {
+  width: 38px;
+  height: 38px;
+  border-radius: var(--radius);
+  display: grid;
+  place-items: center;
+  color: var(--fg-muted);
+  transition: color 0.18s var(--ease), background 0.18s var(--ease);
+}
+.icon-btn:hover { color: var(--fg); background: rgba(255, 255, 255, 0.07); }
+
+.player-stage { flex: 1; position: relative; background: #000; min-height: 0; }
+.player-stage iframe, .player-stage video { width: 100%; height: 100%; border: 0; display: block; background: #000; }
+
+.source-bar {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  padding: 10px var(--page-x) 16px;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+.source-bar::-webkit-scrollbar { display: none; }
+.source-pill {
+  flex: 0 0 auto;
+  font-size: 11px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  padding: 8px 14px;
+  border: 1px solid var(--line-strong);
+  border-radius: 999px;
+  color: var(--fg-muted);
+  transition: all 0.18s var(--ease);
+}
+.source-pill:hover { border-color: var(--fg-muted); color: var(--fg); }
+.source-pill.active { background: var(--fg); border-color: var(--fg); color: #000; font-weight: 700; }
+
+.player-loading {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  gap: 16px;
+  background: #050505;
+  text-align: center;
+  padding: 24px;
+}
+.player-loading .msg { font-size: 12px; letter-spacing: 0.18em; text-transform: uppercase; color: var(--fg-muted); }
+
+/* ----------------------------------------------------------- miniplayer */
+
+.miniplayer {
+  position: fixed;
+  z-index: 95;
+  width: clamp(300px, 26vw, 440px);
+  background: #000;
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  box-shadow: 0 28px 70px rgba(0, 0, 0, 0.92);
+  animation: rise 0.24s var(--ease);
+}
+/* o miniplayer e a razao pra existir versao de PC: some no celular */
+@media (max-width: 720px) { .miniplayer { display: none; } }
+
+.miniplayer .drag {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 10px;
+  cursor: grab;
+  background: #0b0b0b;
+  border-bottom: 1px solid var(--line);
+  user-select: none;
+}
+.miniplayer.dragging .drag { cursor: grabbing; }
+.miniplayer .drag .t {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: var(--fg-muted);
+}
+.miniplayer .drag .acts { margin-left: auto; display: flex; gap: 2px; }
+.miniplayer .drag .acts button {
+  width: 24px;
+  height: 24px;
+  display: grid;
+  place-items: center;
+  color: var(--fg-dim);
+  border-radius: 4px;
+}
+.miniplayer .drag .acts button:hover { color: var(--fg); background: rgba(255, 255, 255, 0.08); }
+.miniplayer .stage { aspect-ratio: 16 / 9; background: #000; }
+.miniplayer .stage iframe, .miniplayer .stage video { width: 100%; height: 100%; border: 0; display: block; }
+
+/* ----------------------------------------------------------- onboarding */
+
+.onb { max-width: 1080px; margin: 0 auto; padding: clamp(30px, 6vh, 70px) var(--page-x) 140px; }
+.onb h1 { font-size: clamp(28px, 4.4vw, 52px); font-weight: 900; letter-spacing: -0.045em; line-height: 1; margin: 0 0 12px; }
+.onb .sub { color: var(--fg-muted); font-weight: 300; margin: 0 0 30px; max-width: 560px; line-height: 1.6; }
+
+.onb-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(clamp(100px, 11vw, 150px), 1fr));
+  gap: clamp(10px, 1.3vw, 16px);
+}
+.pick { position: relative; border-radius: var(--radius); overflow: hidden; aspect-ratio: 2 / 3; background: #0a0a0a; border: 2px solid transparent; transition: border-color 0.16s var(--ease), transform 0.16s var(--ease); }
+.pick img { width: 100%; height: 100%; object-fit: cover; transition: opacity 0.2s var(--ease); }
+.pick:hover { transform: translateY(-4px); }
+.pick.on { border-color: var(--accent); }
+.pick.on img { opacity: 0.5; }
+.pick .tick {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  color: var(--accent);
+  opacity: 0;
+  transition: opacity 0.16s var(--ease);
+}
+.pick.on .tick { opacity: 1; }
+
+.onb-bar {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 70;
+  padding: 16px var(--page-x) 22px;
+  background: linear-gradient(0deg, #000 55%, transparent);
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+.onb-bar .count { font-size: 12px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--fg-muted); }
+.onb-bar .count b { color: var(--fg); font-variant-numeric: tabular-nums; }
+.onb-bar .push { margin-left: auto; display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+
+/* -------------------------------------------------------- import lbxd */
+
+.dropzone {
+  border: 1px dashed var(--line-strong);
+  border-radius: var(--radius-lg);
+  padding: 34px 24px;
+  text-align: center;
+  transition: border-color 0.2s var(--ease), background 0.2s var(--ease);
+  cursor: pointer;
+}
+.dropzone:hover, .dropzone.over { border-color: var(--accent); background: rgba(255, 255, 255, 0.04); }
+.dropzone .big { font-size: 15px; font-weight: 600; margin-bottom: 6px; }
+.dropzone .small { font-size: 12px; color: var(--fg-muted); }
+
+.steps { counter-reset: s; display: grid; gap: 14px; margin-bottom: 22px; }
+.step { display: flex; gap: 13px; align-items: flex-start; }
+.step::before {
+  counter-increment: s;
+  content: counter(s);
+  flex: 0 0 auto;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  border: 1px solid var(--line-strong);
+  display: grid;
+  place-items: center;
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--fg-muted);
+}
+.step div { font-size: 14px; line-height: 1.55; color: #bbb; font-weight: 300; }
+.step b { color: var(--fg); font-weight: 600; }
+
+/* ------------------------------------------------------------- perfis */
+
+.profiles { display: flex; gap: clamp(20px, 4vw, 44px); flex-wrap: wrap; justify-content: center; }
+.profile-pick { text-align: center; transition: transform 0.18s var(--ease); }
+.profile-pick:hover { transform: translateY(-4px); }
+/* O Chrome poe `padding: 1px 6px` em TODO <button>, e o reset do projeto nao
+   zera padding. Quando este circulo virou botao (pra ser clicavel), a foto
+   passou a ser espremida nessa area interna e o fundo aparecia dos lados como
+   barra preta — o mesmo defeito que o avatar do cabecalho teve. */
+.profile-pick .face {
+  padding: 0;
+  width: clamp(78px, 9vw, 108px);
+  height: clamp(78px, 9vw, 108px);
+  border-radius: 50%;
+  background: #050505;
+  border: 1px solid var(--line-strong);
+  display: grid;
+  place-items: center;
+  font-size: 28px;
+  font-weight: 300;
+  overflow: hidden;
+  margin-bottom: 14px;
+  transition: border-color 0.18s var(--ease);
+}
+.profile-pick:hover .face { border-color: var(--fg); }
+.profile-pick .face img { width: 100%; height: 100%; object-fit: cover; }
+.profile-pick .nm {
+  font-size: 12px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--fg-muted);
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+/* --------------------------------------------------------------- auth */
+
+.auth-card { width: 100%; max-width: 400px; }
+.auth-card .wordmark { font-size: 30px; margin-bottom: 8px; }
+.auth-card .tag { color: var(--fg-muted); font-size: 13px; font-weight: 300; margin: 0 0 34px; }
+.auth-switch { margin-top: 26px; font-size: 13px; color: var(--fg-muted); text-align: center; }
+.auth-switch button { color: var(--fg); font-weight: 600; text-decoration: underline; text-underline-offset: 3px; }
+
+.code-input {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+  margin: 6px 0 22px;
+}
+.code-input input {
+  width: 46px;
+  height: 58px;
+  text-align: center;
+  font-size: 22px;
+  font-weight: 700;
+  background: #080808;
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius);
+  font-variant-numeric: tabular-nums;
+}
+.code-input input:focus { outline: none; border-color: var(--accent); }
+
+/* ------------------------------------------------------------ settings */
+
+.settings { max-width: 780px; margin: 0 auto; padding: 0 var(--page-x) 90px; }
+.setting-row {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 18px 0;
+  border-bottom: 1px solid var(--line);
+}
+.setting-row .lbl { font-size: 14px; font-weight: 500; }
+.setting-row .hint { font-size: 12px; color: var(--fg-muted); margin-top: 3px; font-weight: 300; }
+.setting-row .ctl { margin-left: auto; }
+.setting-row select {
+  background: #0c0c0c;
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius);
+  padding: 9px 12px;
+  font-size: 13px;
+}
+.setting-row select:focus { outline: none; border-color: var(--fg-muted); }
+
+.sync-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--accent); display: inline-block; margin-right: 7px; }
+.sync-dot.pending { background: var(--fg-muted); }
+.sync-dot.off { background: var(--fg-dim); }
+
+/* ================= tela larga: o que muda do app pro site ==============
+   O app é vertical e o dedo arrasta a fileira. Aqui a tela é deitada e o
+   mouse não arrasta — daí setas nas fileiras, still 16:9 no "continuar
+   assistindo" e hero em faixa larga com o logo do título.
+   ===================================================================== */
+
+.row-viewport { position: relative; }
+
+/* Antes a seta era uma faixa preta de altura inteira com degradê por cima da
+   fileira: ela cobria o primeiro e o último card e dava a impressão de que
+   estavam cortados. Agora é um botão redondo, pequeno, que flutua ao lado. */
+.row-arrow {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  z-index: 5;
+  display: grid;
+  place-items: center;
+  color: var(--fg);
+  background: rgba(12, 12, 12, 0.82);
+  border: 1px solid var(--line);
+  backdrop-filter: blur(6px);
+  opacity: 0;
+  transition: opacity 0.2s var(--ease), background 0.2s var(--ease);
+}
+.row-viewport:hover .row-arrow { opacity: 1; }
+.row-arrow.left { left: 6px; }
+.row-arrow.right { right: 6px; }
+.row-arrow:hover { background: var(--fg); color: #000; }
+/* sem mouse não há hover: no toque a fileira arrasta, então some */
+@media (hover: none) { .row-arrow { display: none; } }
+
+.wide-slot { flex: 0 0 auto; width: clamp(220px, 24vw, 330px); scroll-snap-align: start; }
+
+.wide-card { position: relative; }
+.wide-card .art {
+  display: block;
+  width: 100%;
+  padding: 0;
+  aspect-ratio: 16 / 9;
+  border-radius: var(--radius);
+  overflow: hidden;
+  background: #0a0a0a;
+  border: 1px solid #111;
+  position: relative;
+  transition: border-color 0.2s var(--ease);
+}
+.wide-card .art img { width: 100%; height: 100%; object-fit: cover; }
+.wide-card:hover .art { border-color: #333; }
+.wide-card .art .fallback {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  padding: 10px;
+  text-align: center;
+  font-size: 12px;
+  color: var(--fg-ghost);
+}
+.wide-card .play-veil {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  background: rgba(0, 0, 0, 0.35);
+  color: #fff;
+  opacity: 0;
+  transition: opacity 0.2s var(--ease);
+}
+.wide-card:hover .play-veil { opacity: 1; }
+.wide-card .wc-remove {
+  position: absolute;
+  top: 7px;
+  right: 7px;
+  width: 25px;
+  height: 25px;
+  border-radius: 50%;
+  background: rgba(0, 0, 0, 0.8);
+  display: grid;
+  place-items: center;
+  opacity: 0;
+  transition: opacity 0.18s var(--ease);
+}
+.wide-card .wc-info {
+  position: absolute;
+  top: 7px;
+  right: 42px;
+  width: 25px;
+  height: 25px;
+  border-radius: 50%;
+  background: rgba(0, 0, 0, 0.8);
+  display: grid;
+  place-items: center;
+  opacity: 0;
+  transition: opacity 0.18s var(--ease);
+}
+.wide-card:hover .wc-remove,
+.wide-card:hover .wc-info { opacity: 1; }
+.wc-meta { margin-top: 9px; }
+.wc-title {
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.wc-title:hover { color: var(--fg-muted); }
+.wc-sub { font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--fg-dim); margin-top: 3px; }
+.wc-bar { margin-top: 8px; }
+
+/* logo do título no hero, no lugar do texto — convenção de streaming e
+   aproveita melhor a faixa larga */
+.home-hero .title-logo {
+  max-width: min(460px, 46vw);
+  max-height: 160px;
+  width: auto;
+  margin-bottom: 18px;
+  filter: drop-shadow(0 4px 24px rgba(0, 0, 0, 0.8));
+}
+
+.hero-dots { display: flex; gap: 7px; margin-top: 22px; }
+.hero-dots button {
+  width: 22px;
+  height: 3px;
+  border-radius: 2px;
+  background: #333;
+  transition: background 0.2s var(--ease), width 0.2s var(--ease);
+}
+.hero-dots button.on { background: var(--fg); width: 34px; }
+
+/* ------------------------------------------------- boas-vindas: ferramentas */
+
+.onb-tools {
+  display: flex;
+  gap: 14px;
+  align-items: center;
+  flex-wrap: wrap;
+  margin-bottom: 26px;
+}
+.onb-search {
+  flex: 1 1 260px;
+  max-width: 420px;
+  padding: 9px 2px;
+}
+.onb-search input { width: 100%; font-size: 15px; }
+
+.onb-hint {
+  font-size: 13px;
+  color: var(--fg-muted);
+  font-weight: 300;
+  margin: -12px 0 20px;
+}
+
+.onb-more { display: grid; place-items: center; padding: 30px 0 6px; }
+
+.back-link {
+  color: var(--fg-dim);
+  font-size: 12px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  margin-bottom: 26px;
+  display: inline-flex;
+  gap: 6px;
+  align-items: center;
+  transition: color 0.18s var(--ease);
+}
+.back-link:hover { color: var(--fg); }
+
+/* fonte de terceiro (iframe): fica visualmente rebaixada, porque ela pode
+   entregar um titulo diferente do pedido */
+.source-pill.fallback { border-style: dashed; color: var(--fg-dim); }
+.source-pill.fallback.active { background: var(--fg-muted); border-color: var(--fg-muted); color: #000; }
+
+/* ------------------------------------------------- filtros dentro da pasta */
+
+.folder-tools { display: flex; gap: 12px; align-items: center; margin-top: 20px; flex-wrap: wrap; }
+
+.ctl-select {
+  background: #0c0c0c;
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius);
+  padding: 10px 12px;
+  font-size: 13px;
+  max-width: 100%;
+}
+.ctl-select:focus { outline: none; border-color: var(--fg-muted); }
+
+.btn.on { border-color: var(--fg); background: rgba(255, 255, 255, 0.06); }
+
+.filter-panel {
+  display: flex;
+  gap: clamp(16px, 3vw, 32px);
+  flex-wrap: wrap;
+  align-items: flex-start;
+  margin-top: 16px;
+  padding: 18px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-lg);
+  background: #060606;
+}
+.filter-group { display: grid; gap: 8px; }
+.filter-group.wide { flex: 1 1 340px; }
+.filter-label {
+  font-size: 10px;
+  letter-spacing: var(--track-wide);
+  text-transform: uppercase;
+  color: var(--fg-muted);
+}
+
+.toggle-row { display: flex; gap: 8px; flex-wrap: wrap; }
+.toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 12px;
+  color: var(--fg-muted);
+  border: 1px solid var(--line-strong);
+  border-radius: 999px;
+  padding: 8px 13px;
+  cursor: pointer;
+  transition: all 0.18s var(--ease);
+  user-select: none;
+}
+.toggle:hover { border-color: var(--fg-muted); color: var(--fg); }
+.toggle input { position: absolute; opacity: 0; pointer-events: none; }
+.toggle.on { background: var(--fg); border-color: var(--fg); color: #000; font-weight: 600; }
+
+
+/* ============================================================ player web
+   Controles próprios, no espírito do player do app: nada de <video controls>,
+   que muda de cara em cada navegador e não tem menu de legenda. */
+
+.player-shell.oculto { cursor: none; }
+.player-shell.oculto .player-top,
+.player-shell.oculto .player-controles { opacity: 0; pointer-events: none; }
+
+.player-top, .player-controles { transition: opacity 260ms ease; }
+
+.player-stage video { object-fit: contain; background: #000; }
+.player-stage { cursor: pointer; }
+
+/* legenda: o tamanho vem das preferências do perfil, iguais às do app */
+.player-stage video::cue {
+  font-size: var(--legenda-fonte, 20px);
+  font-family: inherit;
+  background: rgba(0, 0, 0, 0.55);
+  color: #fff;
+  line-height: 1.35;
+}
+
+.player-aviso {
+  display: flex; align-items: center; gap: 10px;
+  padding: 10px 18px;
+  background: rgba(220, 150, 40, 0.12);
+  border-top: 1px solid rgba(220, 150, 40, 0.35);
+  color: #e8b866;
+  font-size: 12.5px; line-height: 1.45;
+}
+
+.player-controles {
+  padding: 0 18px 14px;
+  background: linear-gradient(to top, rgba(0, 0, 0, 0.92), rgba(0, 0, 0, 0));
+}
+
+.player-controles .barra {
+  position: relative; height: 4px; margin: 0 0 12px;
+  background: rgba(255, 255, 255, 0.18);
+  border-radius: 2px; cursor: pointer;
+}
+.player-controles .barra::before {
+  content: ''; position: absolute; inset: -8px 0; /* alvo de clique maior que o traço */
+}
+.player-controles .buffer { position: absolute; inset: 0 auto 0 0; background: rgba(255,255,255,0.3); border-radius: 2px; }
+.player-controles .feito { position: absolute; inset: 0 auto 0 0; background: var(--fg); border-radius: 2px; }
+.player-controles .bolinha {
+  position: absolute; top: 50%; width: 11px; height: 11px; margin-left: -5.5px;
+  transform: translateY(-50%); background: var(--fg); border-radius: 50%;
+  opacity: 0; transition: opacity 140ms ease;
+}
+.player-controles .barra:hover .bolinha { opacity: 1; }
+
+.player-controles .linha { display: flex; align-items: center; gap: 4px; }
+
+.player-controles .ctrl {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 36px; height: 36px; padding: 0;
+  background: none; border: none; border-radius: 8px;
+  color: var(--fg-dim); cursor: pointer;
+  transition: color 140ms ease, background 140ms ease;
+}
+.player-controles .ctrl:hover { color: var(--fg); background: rgba(255, 255, 255, 0.08); }
+.player-controles .ctrl.on { color: var(--fg); }
+
+.player-controles .volume { display: flex; align-items: center; gap: 2px; }
+.player-controles .volume input {
+  width: 0; opacity: 0; accent-color: var(--fg); cursor: pointer;
+  transition: width 180ms ease, opacity 180ms ease;
+}
+.player-controles .volume:hover input { width: 74px; opacity: 1; margin-right: 6px; }
+
+.player-controles .tempo {
+  margin-left: 10px; font-size: 12px; letter-spacing: 0.04em;
+  color: var(--fg); font-variant-numeric: tabular-nums;
+}
+.player-controles .tempo span { color: var(--fg-muted); }
+
+.player-controles .dir { margin-left: auto; display: flex; align-items: center; gap: 2px; }
+
+.player-controles .menu-wrap { position: relative; }
+.player-controles .menu {
+  position: absolute; right: 0; bottom: calc(100% + 10px);
+  min-width: 230px; max-height: 320px; overflow-y: auto;
+  padding: 6px;
+  background: rgba(18, 18, 18, 0.97);
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  display: flex; flex-direction: column; gap: 1px;
+  box-shadow: 0 18px 50px rgba(0, 0, 0, 0.6);
+}
+.player-controles .menu .titulo {
+  padding: 7px 10px 8px; font-size: 10px; letter-spacing: 0.14em;
+  text-transform: uppercase; color: var(--fg-ghost);
+}
+.player-controles .menu button {
+  text-align: left; padding: 8px 10px;
+  background: none; border: none; border-radius: 6px;
+  color: var(--fg-dim); font-size: 12.5px; cursor: pointer;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.player-controles .menu button:hover:not(:disabled) { background: rgba(255,255,255,0.07); color: var(--fg); }
+.player-controles .menu button.sel { color: var(--fg); font-weight: 600; }
+.player-controles .menu button.aviso { color: #e8b866; }
+.player-controles .menu button:disabled { color: var(--fg-ghost); cursor: default; text-decoration: line-through; }
+.player-controles .menu .vazio { padding: 8px 10px; font-size: 12px; color: var(--fg-ghost); }
+
+/* velocidade: uma barra, nao uma lista de numeros */
+.player-controles .menu.velocidade { min-width: 232px; padding: 6px 12px 10px; }
+.player-controles .menu.velocidade .valor {
+  padding: 2px 0 8px; font-size: 22px; font-weight: 300; color: var(--fg);
+  font-variant-numeric: tabular-nums; text-align: center;
+}
+.player-controles .menu.velocidade input[type='range'] {
+  width: 100%; margin: 0; accent-color: var(--fg); cursor: pointer;
+}
+.player-controles .menu.velocidade .marcas {
+  display: flex; justify-content: space-between;
+  padding-top: 6px; font-size: 10.5px; color: var(--fg-ghost);
+}
+.player-controles .menu.velocidade button { text-align: center; margin-top: 6px; }
+
+
+/* ------------------------------------------- player: controles sobrepostos
+   Antes o topo e os controles eram irmaos do palco e comiam altura: o filme
+   ficava numa faixa no meio da tela, com preto em volta. Agora o palco ocupa
+   a caixa inteira e todo o resto flutua por cima. */
+
+.player-shell .player-stage { position: absolute; inset: 0; flex: none; }
+.player-shell .player-stage video,
+.player-shell .player-stage iframe { width: 100%; height: 100%; object-fit: contain; }
+
+.player-shell .player-top {
+  position: absolute; top: 0; left: 0; right: 0; z-index: 3;
+  background: linear-gradient(to bottom, rgba(0, 0, 0, 0.85), rgba(0, 0, 0, 0));
+  border: none;
+}
+.player-shell .player-controles {
+  position: absolute; bottom: 0; left: 0; right: 0; z-index: 3;
+  padding-top: 60px;
+}
+.player-shell .player-aviso {
+  position: absolute; bottom: 92px; left: 18px; right: 18px; z-index: 3;
+  border-radius: 10px; border: 1px solid rgba(220, 150, 40, 0.35);
+}
+
+/* selo de qualidade: o texto E o botao */
+.player-controles .ctrl.selo {
+  width: auto; min-width: 42px; padding: 0 9px;
+  font-size: 11px; font-weight: 700; letter-spacing: 0.06em;
+  border: 1px solid var(--line-strong); border-radius: 6px;
+}
+
+/* rodinha no meio da tela enquanto o buffer enche depois de um seek */
+.player-buffer {
+  position: absolute; inset: 0; z-index: 2;
+  display: grid; place-items: center; pointer-events: none;
+}
+
+/* carregamento igual ao do app: backdrop escurecido + logo PNG do titulo */
+.player-carregando { position: absolute; inset: 0; z-index: 4; background: #000; }
+.player-carregando .voltar {
+  position: absolute; top: 18px; left: 18px; z-index: 3;
+  display: flex; align-items: center; gap: 6px;
+  padding: 8px 14px 8px 10px; border: none; border-radius: 999px; cursor: pointer;
+  background: rgba(0, 0, 0, 0.55); color: #fff; font-size: 13px; font-weight: 600;
+  backdrop-filter: blur(6px);
+}
+.player-carregando .voltar:hover { background: rgba(0, 0, 0, 0.8); }
+.player-carregando .fundo { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+.player-carregando .veu { position: absolute; inset: 0; background: rgba(0, 0, 0, 0.72); }
+.player-carregando .centro {
+  position: absolute; inset: 0;
+  display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 26px;
+  padding: 28px;
+}
+.player-carregando .logo { width: min(280px, 42vw); max-height: 130px; object-fit: contain; }
+.player-carregando h2 { font-size: 26px; font-weight: 700; letter-spacing: -0.03em; text-align: center; }
+.player-carregando .msg {
+  display: flex; align-items: center; gap: 12px;
+  font-size: 11px; letter-spacing: 0.24em; color: var(--fg-muted);
+}
+
+.link-inline { background: none; border: none; padding: 0; color: inherit; font: inherit; text-decoration: underline; cursor: pointer; }
+
+
+/* botao de pular abertura e cartao do proximo episodio, sobre o video */
+.player-pulo {
+  position: absolute; right: 26px; bottom: 108px; z-index: 4;
+  padding: 10px 18px;
+  background: rgba(0, 0, 0, 0.72); color: var(--fg);
+  border: 1px solid rgba(255, 255, 255, 0.5); border-radius: 6px;
+  font-size: 13px; font-weight: 600; cursor: pointer;
+  backdrop-filter: blur(6px);
+  transition: background 160ms ease, transform 160ms ease;
+}
+.player-pulo:hover { background: var(--fg); color: #000; transform: translateY(-1px); }
+
+.player-proximo {
+  position: absolute; right: 26px; bottom: 108px; z-index: 5;
+  display: flex; align-items: center; gap: 14px;
+  padding: 14px 18px; max-width: min(560px, 76vw);
+  background: rgba(10, 10, 10, 0.92);
+  border: 1px solid var(--line); border-radius: 12px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.65);
+}
+.player-proximo .txt { min-width: 0; display: flex; flex-direction: column; gap: 3px; }
+.player-proximo .lbl {
+  font-size: 10px; letter-spacing: 0.18em; text-transform: uppercase; color: var(--fg-ghost);
+}
+.player-proximo .nm {
+  font-size: 13.5px; font-weight: 600; color: var(--fg);
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.player-proximo .ok {
+  padding: 9px 14px; background: var(--fg); color: #000; border: none; border-radius: 6px;
+  font-size: 12.5px; font-weight: 700; cursor: pointer; white-space: nowrap;
+}
+.player-proximo .nao {
+  padding: 9px 12px; background: none; color: var(--fg-muted);
+  border: 1px solid var(--line); border-radius: 6px; font-size: 12.5px; cursor: pointer; white-space: nowrap;
+}
+.player-proximo .nao:hover { color: var(--fg); border-color: var(--fg-muted); }
+
+.codecs { display: flex; flex-wrap: wrap; gap: 6px; justify-content: flex-end; }
+.codecs span {
+  padding: 4px 9px; border-radius: 5px; font-size: 11px; font-weight: 700; letter-spacing: 0.04em;
+  border: 1px solid var(--line-strong);
+}
+.codecs .sim { color: var(--fg); border-color: var(--fg-muted); }
+.codecs .nao { color: #c96a6a; border-color: rgba(201, 106, 106, 0.4); text-decoration: line-through; }
+
+.btn.ativo { background: var(--fg); border-color: var(--fg); color: #000; }
+
+.lbxd-premio {
+  display: flex; gap: 14px; align-items: flex-start;
+  padding: 14px 16px; margin-bottom: 18px;
+  background: rgba(74, 222, 128, 0.08);
+  border: 1px solid rgba(74, 222, 128, 0.28); border-radius: 10px;
+  font-size: 13px; line-height: 1.55; color: var(--fg-dim);
+}
+.lbxd-premio b { color: #4ade80; }
+ol.steps { list-style: none; margin: 0 0 18px; padding: 0; display: grid; gap: 10px; }
+ol.steps .step { font-size: 13.5px; line-height: 1.55; color: var(--fg-dim); }
+ol.steps .step b { color: var(--fg); margin-right: 4px; }
+
+/* fora do caminho ao descer: o card que cresce no hover deixa de ser cortado */
+.app-header.escondido { transform: translateY(-100%); }
+
+/* ------------------------------------------------- foto e gestao de perfil */
+
+.foto-editor { display: grid; gap: 12px; justify-items: center; margin: 18px 0; }
+.foto-previa {
+  width: 180px; height: 180px; border-radius: 50%; overflow: hidden;
+  background: #101010; border: 1px solid var(--line-strong);
+  display: grid; place-items: center; cursor: grab; touch-action: none;
+  color: var(--fg-ghost);
+}
+.foto-previa:active { cursor: grabbing; }
+.foto-previa img { width: 100%; height: 100%; object-fit: cover; }
+.foto-zoom { display: flex; align-items: center; gap: 10px; font-size: 12px; color: var(--fg-muted); }
+.foto-zoom input { width: 180px; accent-color: var(--fg); }
+.foto-dica { font-size: 11.5px; color: var(--fg-ghost); }
+.foto-acoes { display: flex; gap: 10px; flex-wrap: wrap; justify-content: center; }
+.foto-acoes .btn { cursor: pointer; }
+
+.profile-pick { position: relative; }
+.perfil-acoes {
+  display: flex; gap: 6px; justify-content: center; margin-top: 8px;
+  opacity: 0; transition: opacity 0.18s var(--ease);
+}
+.profile-pick:hover .perfil-acoes { opacity: 1; }
+.perfil-acoes button {
+  width: 26px; height: 26px; border-radius: 50%;
+  border: 1px solid var(--line-strong); color: var(--fg-dim);
+  display: grid; place-items: center; padding: 0;
+}
+.perfil-acoes button:hover { color: var(--fg); border-color: var(--fg-muted); }
+
+.perfil-modal {
+  margin: 30px auto 0; max-width: 420px; padding: 22px;
+  background: rgba(14, 14, 14, 0.96); border: 1px solid var(--line); border-radius: 14px;
+}
+.perfil-modal h3 { margin: 0 0 6px; font-size: 15px; }
+.perfil-modal p { font-size: 13px; line-height: 1.6; color: var(--fg-muted); margin: 0 0 16px; }
+
+/* Legenda desenhada por nos, nao pelo <track>. Fica acima da barra de
+   controles e centralizada na imagem; cada linha e um bloco, entao fala de
+   tres linhas nao ganha espacamento estranho. */
+.legenda-camada {
+  position: absolute;
+  left: 50%;
+  bottom: 11%;
+  transform: translateX(-50%);
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1px;
+  max-width: min(80%, 980px);
+  text-align: center;
+  pointer-events: none;
+  line-height: 1.3;
+  /* O tamanho vem das configurações, mas acompanha a tela: a mesma legenda
+     numa janela de 900px e numa TV de 55" não pode ter o mesmo corpo. */
+  font-size: calc(var(--legenda-fonte, 20px) * 0.8 + 0.5vw);
+  font-weight: 600;
+  letter-spacing: 0.004em;
+  font-feature-settings: 'kern' 1, 'liga' 1;
+}
+
+/*
+ * Legenda de cinema: texto e sombra, sem caixa.
+ *
+ * A tarja preta atrás de cada linha é o que mais denuncia player amador — ela
+ * recorta um retângulo no meio da imagem e briga com o enquadramento. O que
+ * segura a leitura sem sujar a tela é contorno FINO mais sombra em camadas: o
+ * contorno garante a borda contra fundo claro, a sombra dá o descolamento.
+ *
+ * `paint-order: stroke fill` existe pra isso: sem ele o contorno é desenhado
+ * por cima da letra e engorda o tipo; com ele, a letra fica limpa por dentro.
+ */
+.legenda-camada span {
+  background: none;
+  padding: 0 4px;
+  color: #fff;
+  font-style: italic;
+  text-wrap: balance;
+  text-shadow:
+    0 2px 6px rgba(0, 0, 0, 0.9),
+    0 4px 16px rgba(0, 0, 0, 0.6);
+  animation: legenda-entra 130ms var(--ease, ease-out);
+}
+
+/* A troca de fala é seca demais quando é instantânea; 130ms de fade tira o
+   "piscar" sem atrasar a leitura. */
+@keyframes legenda-entra {
+  from { opacity: 0; transform: translateY(2px); }
+  to { opacity: 1; transform: none; }
+}
+
+/* sem controles na tela a legenda desce, pra nao ficar flutuando no meio */
+.player-shell.oculto .legenda-camada { bottom: 7%; transition: bottom 260ms var(--ease); }
+
+/* No miniplayer a legenda atrapalharia mais do que ajuda: pouca área e texto
+   grande demais pro espaço. */
+.miniplayer .legenda-camada { display: none; }
+
+/* ------------------------------------------------------------- explorar
+   Filtro é a interface principal desta tela, não um acessório escondido:
+   tipo, categoria e gênero ficam à vista, e só o que é menos usado (época,
+   nota, ordem) vai pro painel. */
+.explorar-barra { padding: 0 var(--page-x); display: grid; gap: 10px; margin-bottom: 18px; }
+.explorar-barra .toggle-row.tipos { align-items: center; }
+.explorar-linha {
+  display: flex; gap: 8px; overflow-x: auto; padding-bottom: 4px;
+  scrollbar-width: none;
+}
+.explorar-linha::-webkit-scrollbar { display: none; }
+.explorar-linha .toggle { flex: 0 0 auto; }
+/* gênero é escolha secundária: menor, pra categoria continuar sendo a linha
+   que salta aos olhos */
+.explorar-linha.generos .toggle { font-size: 11.5px; padding: 6px 11px; }
+.explorar-painel { padding: 0 var(--page-x); margin-bottom: 4px; }
+.explorar-painel .filter-panel { margin-top: 0; }
+
+/* ------------------------------------------------------------------ notas
+   Selos de nota (Letterboxd, público, prêmios, IMDb, Rotten Tomatoes).
+   Moravam no title.css, que só a página do título importa — no banner da Home
+   eles saíam SEM estilo nenhum: sem espaço entre o número e o "/10", e
+   herdando o caixa-alta espaçado do .meta ("4 OSCARS GANHOU" tudo colado).
+   Aqui valem nos dois lugares, e desligam o caixa-alta: nota é número e nome
+   próprio, não rótulo. */
+/* Notas: os mesmos selos do app — logo do Letterboxd em três pontos, chip
+   amarelo do IMDb, chip vermelho do Rotten Tomatoes, prêmio em dourado. */
+.nota {
+  display: inline-flex; align-items: center; gap: 6px;
+  font-size: 13.5px; text-transform: none; letter-spacing: 0;
+}
+.nota + .nota { margin-left: 2px; }
+.nota svg { flex: none; }
+.nota b { color: var(--fg); font-weight: 700; }
+
+/* Dentro do selo, dois casos OPOSTOS, e é por isso que um `gap` só não
+   resolve: "8,5" e "/10" são a MESMA informação e têm que andar juntas;
+   "4 Oscars" e "ganhou" são duas, e coladas viram uma palavra só. */
+.nota b + small { margin-left: -3px; }
+.nota.premio b + small { margin-left: 1px; }
+.nota small { color: var(--fg-muted); font-size: 11.5px; font-weight: 400; }
+
+.selo-lbxd {
+  display: inline-flex; align-items: center; gap: 1px;
+  background: #2C3440; padding: 4px 5px; border-radius: 3px;
+}
+.selo-lbxd i { width: 6px; height: 6px; border-radius: 50%; display: block; }
+.selo-lbxd i:nth-child(1) { background: #00E054; }
+.selo-lbxd i:nth-child(2) { background: #40BCF4; margin-left: -2px; }
+.selo-lbxd i:nth-child(3) { background: #FF8000; margin-left: -2px; }
+
+.selo-imdb {
+  background: #F5C518; color: #000; font-size: 10px; font-weight: 900;
+  padding: 2px 4px; border-radius: 3px; letter-spacing: 0.02em;
+}
+.selo-rt {
+  background: #FA320A; color: #fff; font-size: 10px; font-weight: 900;
+  padding: 2px 4px; border-radius: 3px;
+}
+
+/* "me dá outro arquivo igual": mora no menu de qualidade porque é ali que a
+   pessoa vai quando o arquivo está ruim — e não é uma qualidade, é uma ação. */
+.menu .trocar-arquivo {
+  display: flex; align-items: center; gap: 8px;
+  margin-top: 6px; padding-top: 10px;
+  border-top: 1px solid var(--bg-3, #222);
+  color: var(--fg-muted);
+}
+.menu .trocar-arquivo:hover { color: var(--fg); }
+
+/* Ajuste fino da legenda: mora no menu dela, porque é lá que a pessoa vai
+   quando a fala não bate com a boca. */
+.menu .sincronia-legenda {
+  display: flex; align-items: center; justify-content: space-between; gap: 6px;
+  padding: 4px 0 8px;
+}
+.menu .sincronia-legenda button {
+  padding: 4px 8px; border-radius: 6px; background: var(--bg-2, #161616);
+  color: var(--fg); font-weight: 700; font-size: 12px;
+}
+.menu .sincronia-legenda .valor {
+  font-size: 12px; color: var(--fg-muted); font-variant-numeric: tabular-nums;
+}
+.menu .sugestao-sync {
+  color: #F5C518; font-size: 12px; padding-bottom: 8px;
+  border-bottom: 1px solid var(--bg-3, #222); margin-bottom: 6px;
+}
+
+/* Os botões do aviso ("atrasar", "adiantar", "desligar") saíam colados, virando
+   uma palavra só: "atrasaradiantardesligar". */
+.player-aviso .link-inline {
+  margin-left: 10px; padding: 2px 8px; border-radius: 999px;
+  background: rgba(255, 255, 255, 0.08); color: var(--fg);
+  font-size: 12px; font-weight: 600; white-space: nowrap;
+}
+.player-aviso .link-inline:hover { background: rgba(255, 255, 255, 0.16); }
+
+/* "só o som" é a opção avançada: fica no menu, mas não compete com a troca
+   normal de idioma. */
+.menu .so-som { font-size: 12px; color: var(--fg-muted); }
+.menu .so-som:hover { color: var(--fg); }
+
+/* Aviso de "isto é outro filme": não pode parecer recado de rodapé. */
+.player-aviso.grave {
+  background: rgba(180, 30, 20, 0.92);
+  color: #fff;
+}
+.player-aviso.grave .link-inline { background: rgba(0, 0, 0, 0.25); color: #fff; }
+
+/* ---------- convite pra instalar a extensão (som dublado num arquivo DUAL) ---------- */
+.painel-extensao {
+  position: absolute; z-index: 6;
+  left: 50%; top: 50%; transform: translate(-50%, -50%);
+  width: min(560px, calc(100% - 32px));
+  padding: 26px 28px 22px;
+  background: rgba(10, 10, 10, 0.96);
+  border: 1px solid var(--line-strong);
+  border-radius: 14px;
+  box-shadow: 0 30px 80px rgba(0, 0, 0, 0.7);
+  color: var(--fg);
+  font-size: 14px; line-height: 1.5;
+}
+.painel-extensao .fechar {
+  position: absolute; top: 12px; right: 12px;
+  width: 32px; height: 32px; border-radius: 50%;
+  background: transparent; border: 0; color: var(--fg-muted); cursor: pointer;
+  display: grid; place-items: center;
+}
+.painel-extensao .fechar:hover { color: var(--fg); background: rgba(255,255,255,0.08); }
+.painel-extensao .selo {
+  display: inline-block; padding: 2px 8px; margin-bottom: 10px;
+  border: 1px solid var(--line-strong); border-radius: 6px;
+  font-size: 11px; font-weight: 700; letter-spacing: 0.08em; color: var(--fg-muted);
+}
+.painel-extensao h3 { margin: 0 0 8px; font-size: 20px; line-height: 1.25; }
+.painel-extensao .cabeca p { margin: 0 0 18px; color: var(--fg-muted); }
+.painel-extensao .passos {
+  margin: 0 0 18px; padding: 0 0 0 22px;
+  display: grid; gap: 10px;
+}
+.painel-extensao .passos li { padding-left: 4px; }
+.painel-extensao .passos li::marker { color: var(--fg-muted); font-weight: 700; }
+.painel-extensao .passos span { display: block; color: var(--fg-muted); font-size: 13px; }
+.painel-extensao code {
+  padding: 1px 6px; border-radius: 4px;
+  background: rgba(255,255,255,0.08); font-size: 13px;
+}
+.painel-extensao .botao {
+  display: inline-flex; align-items: center; gap: 8px;
+  padding: 7px 12px; margin-bottom: 4px;
+  background: var(--accent); color: #000; border-radius: 8px;
+  font-weight: 600; text-decoration: none; font-size: 13px;
+}
+.painel-extensao .botao:hover { opacity: 0.9; }
+.painel-extensao .acoes { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+.painel-extensao .acoes button {
+  padding: 8px 14px; border-radius: 8px; cursor: pointer; font: inherit; font-size: 13px;
+  background: transparent; border: 1px solid var(--line-strong); color: var(--fg);
+}
+.painel-extensao .acoes button.primario { background: var(--accent); color: #000; border-color: var(--accent); font-weight: 600; }
+.painel-extensao .acoes button.discreto { border-color: transparent; color: var(--fg-muted); margin-left: auto; }
+.painel-extensao .acoes button:disabled { opacity: 0.6; cursor: default; }
+.painel-extensao .ainda-nao { margin: 12px 0 0; font-size: 13px; color: #e8b866; }
+
+/* faixas do próprio arquivo no menu de áudio */
+.player-controles .menu .faixa-arquivo { display: flex; justify-content: space-between; gap: 12px; }
+.player-controles .menu .faixa-arquivo small { color: var(--fg-muted); font-weight: 400; }
+.player-controles .menu .faixa-arquivo.sel small { color: var(--fg-muted); }

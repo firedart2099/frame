@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
+  <!--
+    Favicon sem fundo, que troca de cor com o tema do navegador.
+
+    Um PNG não faz isso: ele é uma cor só, e no tema escuro um símbolo preto
+    some na aba. SVG faz — dentro dele valem CSS e media query, e o navegador
+    reavalia quando o tema muda. Por isso a marca aqui é traço, sem o quadrado
+    preto do ícone do app: na aba, quem dá o fundo é o navegador.
+
+    Chrome, Edge e Firefox honram isto. Safari ignora media query em favicon e
+    fica com o stroke padrão (preto), que é o caso certo pra ele — daí a cor
+    clara vir só na media query, e não o contrário.
+  -->
+  <style>
+    .marca { stroke: #111; }
+    @media (prefers-color-scheme: dark) { .marca { stroke: #fff; } }
+  </style>
+  <g class="marca" fill="none" stroke-linecap="round" stroke-linejoin="round">
+    <rect x="6" y="6" width="52" height="52" rx="6" stroke-width="4" />
+    <rect x="19" y="19" width="26" height="26" rx="2" stroke-width="3.4" />
+    <path d="M11 11 19 19M53 11 45 19M11 53 19 45M53 53 45 45" stroke-width="3.4" />
+  </g>
+</svg>

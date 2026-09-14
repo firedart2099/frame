@@ -1,0 +1,131 @@
+/* =====================================================================
+   Downloads — mesma régua do resto: preto, branco, uma cor só de ação.
+   ===================================================================== */
+
+.dl-page { max-width: 860px; margin: 0 auto; padding: 0 var(--page-x) 90px; }
+
+.dl-head { padding: clamp(40px, 9vh, 90px) 0 clamp(28px, 5vh, 52px); }
+.dl-head h1 {
+  font-size: clamp(38px, 8vw, 76px);
+  font-weight: 900;
+  letter-spacing: -0.05em;
+  line-height: 0.92;
+  margin: 12px 0 16px;
+}
+.dl-head p { color: var(--fg-muted); font-weight: 300; line-height: 1.62; margin: 0; max-width: 52ch; }
+
+/* ------------------------------------------------------------- destaque */
+
+.dl-current {
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  margin-bottom: 44px;
+}
+.dl-current-top {
+  padding: 24px clamp(18px, 3vw, 30px);
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex-wrap: wrap;
+  border-bottom: 1px solid var(--line);
+  background: #070707;
+}
+.dl-version { font-size: clamp(26px, 4vw, 38px); font-weight: 900; letter-spacing: -0.04em; line-height: 1; }
+.dl-meta { font-size: 11px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--fg-dim); margin-top: 7px; }
+
+.dl-badge {
+  font-size: 10px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  font-weight: 700;
+  padding: 5px 9px;
+  border-radius: 3px;
+  background: var(--accent);
+  color: #000;
+}
+.dl-badge.beta { background: var(--fg-muted); }
+
+.dl-files { display: grid; }
+.dl-file {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 18px clamp(18px, 3vw, 30px);
+  border-bottom: 1px solid var(--line);
+  transition: background 0.18s var(--ease);
+}
+.dl-file:last-child { border-bottom: none; }
+.dl-file:hover { background: #0a0a0a; }
+.dl-file .ico { color: var(--fg-muted); }
+.dl-file .lbl { font-size: 15px; font-weight: 600; }
+.dl-file .note { font-size: 12px; color: var(--fg-muted); margin-top: 3px; font-weight: 300; }
+.dl-file .act { margin-left: auto; }
+.dl-file.soon { opacity: 0.5; }
+.dl-file .soon-tag {
+  margin-left: auto;
+  font-size: 10px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--fg-dim);
+  border: 1px solid var(--line-strong);
+  padding: 6px 10px;
+  border-radius: 3px;
+}
+
+/* -------------------------------------------------------------- aviso */
+
+.dl-tip {
+  display: flex;
+  gap: 12px;
+  padding: 16px 18px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: #060606;
+  margin-bottom: 46px;
+  font-size: 13px;
+  line-height: 1.6;
+  color: var(--fg-muted);
+  font-weight: 300;
+}
+.dl-tip b { color: var(--fg); font-weight: 600; }
+.dl-tip .ico { color: var(--fg-dim); flex: 0 0 auto; margin-top: 2px; }
+
+/* ----------------------------------------------------------- changelog */
+
+.dl-log-head { display: flex; align-items: baseline; gap: 14px; margin-bottom: 22px; }
+
+.dl-release { border-top: 1px solid var(--line); padding: 26px 0; }
+.dl-release:first-of-type { border-top: none; }
+.dl-release-head { display: flex; align-items: baseline; gap: 14px; flex-wrap: wrap; margin-bottom: 16px; }
+.dl-release-head .v { font-size: 20px; font-weight: 800; letter-spacing: -0.03em; }
+.dl-release-head .d { font-size: 11px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--fg-dim); }
+.dl-release-head .now {
+  font-size: 10px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--fg);
+  border: 1px solid var(--line-strong);
+  padding: 3px 8px;
+  border-radius: 3px;
+}
+
+.dl-changes { list-style: none; margin: 0; padding: 0; display: grid; gap: 11px; }
+.dl-changes li { display: flex; gap: 12px; align-items: flex-start; font-size: 14px; line-height: 1.55; color: #bdbdbd; font-weight: 300; }
+.dl-kind {
+  flex: 0 0 auto;
+  width: 74px;
+  font-size: 10px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  font-weight: 700;
+  padding-top: 3px;
+}
+.dl-kind.novo { color: var(--fg); }
+.dl-kind.melhor { color: var(--fg-muted); }
+.dl-kind.correcao { color: var(--fg-dim); }
+
+@media (max-width: 520px) {
+  .dl-changes li { flex-direction: column; gap: 4px; }
+  .dl-kind { width: auto; }
+}
